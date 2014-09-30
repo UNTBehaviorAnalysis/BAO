@@ -1,0 +1,11 @@
+<style>
+
+</style>
+<div id="titles-list">
+	<table class="course">
+	<tr><th>Author/Title</th></tr>
+		<% _.each(titles, function(title){ %>
+			<tr><td><a href="#ce/ceOverview/<%= title.get('EXID') %>"><%= title.get('TITLE') %></a></td></tr> 
+		<% }); %>
+	</table>	
+</div>	
