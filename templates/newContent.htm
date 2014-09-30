@@ -1,0 +1,68 @@
+<style>
+.newContent{
+padding-top: 5px;
+padding-left: 5px;
+}
+
+</style>
+<script>
+        tinymce.init({
+			selector:'textarea',
+			external_plugins: { "nanospell": "/modular/bao/nanospell/plugin.js" },
+			nanospell_server:"asp",
+			theme: "modern",
+			width: 921,
+			height: 500,
+			plugins: [
+			"advlist autolink link image lists charmap print preview hr anchor pagebreak save",
+			"searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+			"save table contextmenu directionality emoticons template paste textcolor"
+			],
+			toolbar: "save | insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | l      ink image | print preview fullpage | forecolor backcolor emoticons", 
+			style_formats: [
+			{title: 'Bold text', inline: 'b'},
+			{title: 'Red text', inline: 'span', styles: {color: '#ff0000'}},
+			{title: 'Red header', block: 'h1', styles: {color: '#ff0000'}},
+			{title: 'Example 1', inline: 'span', classes: 'example1'},
+			{title: 'Example 2', inline: 'span', classes: 'example2'},
+			{title: 'Table styles'},
+			{title: 'Table row 1', selector: 'tr', classes: 'tablerow1'}
+			],
+			save_enablewhendirty: true,
+			save_onsavecallback: function() {
+				//console.log(this.getContent()+":"+$('.pageTitle').val())
+				if($('.pageTitle').val()=='' && $('.pagePath').val()==''){
+					$('.viewPage').html('Please enter a page title and path');
+					return false;
+				}
+				tinymce.util.XHR.send({
+					 url : "/modular/bao/db/newContent.cfm",
+					 content_type : "application/x-www-form-urlencoded",
+					 type : "POST",
+					 data : "title=" + escape($('.pageTitle').val()) + "&path=" + escape($('.pagePath').val()) + "&notes=" + escape($('.notes').val()) + "&content=" + escape(this.getContent()),
+					 success : function(text) {
+						// Do anything you need to do if save successful
+						//console.log(text);  
+						$('.viewPage').html(text);
+					 },       
+					error : function( type, req, o ){     
+						//console.log("Save Failed\n Error: " + type + "\n HTTP Status: " + req.status + ":" + req.statusText);
+						$('.viewPage').html("Save Failed Error: " + type + " HTTP Status: " + req.status + " (" + req.statusText + " Path may already exist.)");
+					}
+				});
+				}
+		});		
+</script>
+<style>
+
+</style>
+<!--found in activityTemplates folder-->	
+<div id="templateHeader"></div><!--banner-->
+<div class="newContent">
+<h2>New Page</h2>
+<p id="pageTitle">Page Title: <input class="pageTitle" /></p>
+<p>Path: <input class="pagePath" /></p>
+<p>Notes: <input class="notes" /></p>
+<p class="viewPage"></p>
+</div>
+<textarea></textarea>
